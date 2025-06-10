@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 22283183b964343aa863d661a1c6f0f8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mandalaObject: {fileID: 8534413934303686205, guid: 5ea59a2b7362148a9b3f4dd261e0e5a3, type: 3}
+  - mandalaMaterial: {fileID: 2100000, guid: c19558f89aea84845a628d6104783644, type: 2}
+  - shaderController: {instanceID: 0}
+  - timelineDirector: {instanceID: 0}
+  - audioSource: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
