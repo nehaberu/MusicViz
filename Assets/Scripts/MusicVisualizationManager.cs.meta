@@ -5,11 +5,11 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - musicTrack: {fileID: 8300000, guid: 59b36b1b00b344e88a87e31134c9625a, type: 3}
-  - audioSource: {instanceID: 0}
+  - audioSource: {fileID: 3455424465804907158, guid: a3efec0bac829419fab9081df2e2afe1, type: 3}
   - timelineDirector: {instanceID: 0}
   - timelineAsset: {instanceID: 0}
-  - mandalaController: {instanceID: 0}
-  - mandalaGenerator: {instanceID: 0}
+  - mandalaController: {fileID: 3055845464709917735, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
+  - imageController: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

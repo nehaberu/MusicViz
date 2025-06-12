@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - spriteRenderer: {instanceID: 0}
+  - spriteRenderer: {fileID: 8630493039672743007, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   - emergence: {fileID: 21300000, guid: 790714e8b40a548ab842d2116b261e2b, type: 3}
   - curiosity: {fileID: 21300000, guid: a14f7f1f3593d4dbf99de47f6dd43ff7, type: 3}
   - buildup: {fileID: 21300000, guid: 468fe81b6b6d44ab788a56819f5440cc, type: 3}

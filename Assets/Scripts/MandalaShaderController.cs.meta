@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - mandalaMaterial: {fileID: 2100000, guid: f2e976a703fc24d5583a36cf35cf79a8, type: 2}
+  - mandalaMaterial: {fileID: 2100000, guid: b6d7b7ec904574faabd296acba9d0a53, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

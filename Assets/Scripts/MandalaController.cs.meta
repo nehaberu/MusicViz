@@ -4,11 +4,8 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - mandalaObject: {fileID: 8534413934303686205, guid: 5ea59a2b7362148a9b3f4dd261e0e5a3, type: 3}
-  - mandalaMaterial: {fileID: 2100000, guid: c19558f89aea84845a628d6104783644, type: 2}
-  - shaderController: {instanceID: 0}
-  - timelineDirector: {instanceID: 0}
-  - audioSource: {instanceID: 0}
+  - mandalaObject: {fileID: 1984144490873265427, guid: c6a22d28357674bb689e38010292ff39, type: 3}
+  - mandalaMaterial: {fileID: 2100000, guid: b6d7b7ec904574faabd296acba9d0a53, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

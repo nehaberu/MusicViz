@@ -10,6 +10,7 @@ public class MandalaImageController : MonoBehaviour
     private float targetAlpha = 1f;
     private float fadeSpeed = 1.5f;
 
+
     private void Update()
     {
         // Auto-rotate
@@ -38,7 +39,7 @@ public class MandalaImageController : MonoBehaviour
             case "resolution": spriteRenderer.sprite = resolution; break;
         }
 
-        // Optional: Fade in on change
+        // Automatically fade in every time the phase changes
         FadeIn();
     }
 
@@ -46,4 +47,3 @@ public class MandalaImageController : MonoBehaviour
     public void FadeOut() => targetAlpha = 0f;
     public void SetRotationSpeed(float speed) => rotationSpeed = speed;
 }
-
