@@ -27,21 +27,34 @@ public class MandalaImageController : MonoBehaviour
 
     public void SetPhase(string phase)
     {
-        if (spriteRenderer == null) return;
+        if (spriteRenderer == null)
+        {
+            Debug.LogWarning("🚫 SpriteRenderer is null in SetPhase!");
+            return;
+        }
+
+        Sprite selectedSprite = null;
 
         switch (phase.ToLower())
         {
-            case "emergence": spriteRenderer.sprite = emergence; break;
-            case "curiosity": spriteRenderer.sprite = curiosity; break;
-            case "buildup": spriteRenderer.sprite = buildup; break;
-            case "peak": spriteRenderer.sprite = peak; break;
-            case "descent": spriteRenderer.sprite = descent; break;
-            case "resolution": spriteRenderer.sprite = resolution; break;
+            case "emergence": selectedSprite = emergence; break;
+            case "curiosity": selectedSprite = curiosity; break;
+            case "buildup": selectedSprite = buildup; break;
+            case "peak": selectedSprite = peak; break;
+            case "descent": selectedSprite = descent; break;
+            case "resolution": selectedSprite = resolution; break;
+            default:
+                Debug.LogWarning($"❓ Unknown phase: {phase}");
+                return;
         }
 
-        // Automatically fade in every time the phase changes
-        FadeIn();
+        spriteRenderer.sprite = selectedSprite;
+
+        Debug.Log($"🖼 Sprite for phase '{phase}' set to: {selectedSprite?.name ?? "null"}");
+        FadeIn();  // Optional
     }
+
+
 
     public void FadeIn() => targetAlpha = 1f;
     public void FadeOut() => targetAlpha = 0f;

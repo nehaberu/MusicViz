@@ -469,16 +469,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22283183b964343aa863d661a1c6f0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mandalaObject: {fileID: 8534413934303686205, guid: 5ea59a2b7362148a9b3f4dd261e0e5a3, type: 3}
+  mandalaObject: {fileID: 1726763481}
   initialScale: 1
-  mandalaMaterial: {fileID: 2100000, guid: c19558f89aea84845a628d6104783644, type: 2}
-  initialColor: {r: 0, g: 0, b: 1, a: 1}
+  mandalaMaterial: {fileID: 2100000, guid: b6d7b7ec904574faabd296acba9d0a53, type: 2}
+  initialColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &847195032 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   m_PrefabInstance: {fileID: 4234098324289362309}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1726763481}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9ea0988c4aa2844e089c89198a854763, type: 3}
@@ -487,6 +487,11 @@ MonoBehaviour:
 --- !u!4 &847195034 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5165475552401349092, guid: c6a22d28357674bb689e38010292ff39, type: 3}
+  m_PrefabInstance: {fileID: 4234098324289362309}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1726763481 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1984144490873265427, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   m_PrefabInstance: {fileID: 4234098324289362309}
   m_PrefabAsset: {fileID: 0}
 --- !u!82 &1854988911 stripped
@@ -682,7 +687,7 @@ PrefabInstance:
       objectReference: {fileID: 1854988911}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: peakStartTime
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: imageController
@@ -690,11 +695,11 @@ PrefabInstance:
       objectReference: {fileID: 847195032}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: buildupStartTime
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: descentStartTime
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: mandalaController
@@ -702,11 +707,11 @@ PrefabInstance:
       objectReference: {fileID: 697907274}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: curiosityStartTime
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6528341426747447930, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: resolutionStartTime
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8095384935611837952, guid: 578ce656feedd4cb8ad28cf9f685107e, type: 3}
       propertyPath: m_Name

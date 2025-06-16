@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class MandalaController : MonoBehaviour
@@ -38,7 +39,25 @@ public class MandalaController : MonoBehaviour
     {
         if (mandalaMaterial != null)
             mandalaMaterial.color = color;
+        
+        if (mandalaMaterial != null)
+    {
+    mandalaMaterial.color = color;
+
+    // Add emission for bloom!
+    Color emission = color * 2f; // Boost intensity
+    mandalaMaterial.SetColor("_EmissionColor", emission);
+    }
+
     }
 
     public void SetComplexity(int s, int l) { /* Unused now */ }
+
+    public void SetEmission(Color emission)
+    {
+    if (mandalaMaterial != null)
+        mandalaMaterial.SetColor("_EmissionColor", emission);
+    }
+
 }
+

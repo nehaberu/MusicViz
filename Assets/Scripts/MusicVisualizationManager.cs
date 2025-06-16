@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -20,48 +19,65 @@ public class MusicVisualizationManager : MonoBehaviour
 
     [Header("Visualization Section Markers")]
     [SerializeField] private float emergenceStartTime = 0f;
-    [SerializeField] private float curiosityStartTime = 2f;
-    [SerializeField] private float buildupStartTime = 4f;
-    [SerializeField] private float peakStartTime = 6f;
-    [SerializeField] private float descentStartTime = 180f;
-    [SerializeField] private float resolutionStartTime = 240f;
+    [SerializeField] private float curiosityStartTime = 10f;
+    [SerializeField] private float buildupStartTime = 20f;
+    [SerializeField] private float peakStartTime = 30f;
+    [SerializeField] private float descentStartTime = 40f;
+    [SerializeField] private float resolutionStartTime = 50f;
 
     private enum MandalaPhase { Emergence, Curiosity, Buildup, Peak, Descent, Resolution }
     private MandalaPhase currentPhase = MandalaPhase.Emergence;
-    private MandalaPhase previousPhase = MandalaPhase.Emergence;
+    private MandalaPhase previousPhase = MandalaPhase.Resolution; // ensures first visual is triggered
+
     private bool isPlaying = false;
 
     void Start()
     {
-        Debug.Log("✅ MusicVisualizationManager is running");
+        Debug.Log("🎬 MusicVisualizationManager is running");
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
         if (audioSource != null && musicTrack != null)
+        {
             audioSource.clip = musicTrack;
+            audioSource.Play();
+            Debug.Log("🎶 Forcing music playback manually");
+        }
+        else
+        {
+            Debug.LogWarning("❌ AudioSource or MusicTrack missing");
+        }
 
-        if (timelineDirector != null && timelineAsset != null)
-            timelineDirector.playableAsset = timelineAsset;
+        isPlaying = true;
+        timelineDirector?.Play();
 
-        Play(); // Auto-start for debugging; remove if not needed
+        ApplyVisualEffects(); // initial visual
     }
 
     void Update()
     {
-        Debug.Log("📍 Update is running");
+        if (!isPlaying || audioSource == null)
+        {
+            Debug.LogWarning("❌ Update skipped - Not playing or no audioSource");
+            return;
+        }
 
-        //if (!isPlaying || audioSource == null || !audioSource.isPlaying)
-            //return;
+        if (!audioSource.isPlaying)
+        {
+            Debug.LogWarning("⛔ Audio is not playing — timeline paused?");
+            return;
+        }
 
         float currentTime = audioSource.time;
-        Debug.Log("🎵 Music Time: " + currentTime.ToString("F2"));
+        Debug.Log($"🎵 Music Time: {currentTime:F2}");
 
         UpdateCurrentPhase(currentTime);
+        Debug.Log($"🧠 Current phase = {currentPhase}");
 
         if (currentPhase != previousPhase)
         {
-            Debug.Log("🔁 Phase changed: " + previousPhase + " → " + currentPhase);
+            Debug.Log($"🔁 Phase changed: {previousPhase} → {currentPhase}");
             ApplyVisualEffects();
             previousPhase = currentPhase;
         }
@@ -85,7 +101,7 @@ public class MusicVisualizationManager : MonoBehaviour
 
     private void ApplyVisualEffects()
     {
-        Debug.Log("✨ Applying visuals for phase: " + currentPhase.ToString());
+        Debug.Log("✨ Applying visuals for phase: " + currentPhase);
 
         if (imageController != null)
         {
@@ -98,9 +114,8 @@ public class MusicVisualizationManager : MonoBehaviour
         {
             case MandalaPhase.Emergence:
                 mandalaController?.SetColor(new Color(0.2f, 0.4f, 0.8f));
-                mandalaController?.SetScale(0.7f);
-                imageController?.SetRotationSpeed(10f);
-                imageController?.FadeIn();
+                StartCoroutine(AnimateEmergenceFadeIn(2f));
+                StartCoroutine(AnimateEmergenceScale(2f));
                 break;
 
             case MandalaPhase.Curiosity:
@@ -136,56 +151,40 @@ public class MusicVisualizationManager : MonoBehaviour
         }
     }
 
-    public void Play()
+    IEnumerator AnimateEmergenceFadeIn(float duration)
     {
-    if (audioSource != null && !audioSource.isPlaying)
-    {
-        Debug.Log("▶️ Play() called");
-        audioSource.Play();
-        timelineDirector?.Play();
-        isPlaying = true;
-    }
-    else
-    {
-        Debug.Log("⚠️ Play skipped: already playing or audioSource is null");
-    }
-    }
+        float time = 0f;
+        imageController?.FadeOut();
 
-
-    public void Pause()
-    {
-        if (audioSource != null && audioSource.isPlaying)
+        while (time < duration)
         {
-            Debug.Log("⏸ Pausing music...");
-            audioSource.Pause();
-            timelineDirector?.Pause();
-            isPlaying = false;
+            float t = time / duration;
+            float alpha = Mathf.Lerp(0f, 1f, t);
+            if (imageController?.spriteRenderer != null)
+            {
+                Color c = imageController.spriteRenderer.color;
+                c.a = alpha;
+                imageController.spriteRenderer.color = c;
+            }
+            time += Time.deltaTime;
+            yield return null;
         }
     }
 
-    public void Stop()
+    IEnumerator AnimateEmergenceScale(float duration)
     {
-        if (audioSource != null)
+        float time = 0f;
+        float startScale = 0.2f;
+        float endScale = 0.8f;
+
+        while (time < duration)
         {
-            Debug.Log("⏹ Stopping music...");
-            audioSource.Stop();
-            timelineDirector?.Stop();
-            isPlaying = false;
-            currentPhase = MandalaPhase.Emergence;
-            previousPhase = MandalaPhase.Emergence;
-            ApplyVisualEffects();
+            float t = time / duration;
+            mandalaController?.SetScale(Mathf.Lerp(startScale, endScale, t));
+            time += Time.deltaTime;
+            yield return null;
         }
-    }
 
-    private void TogglePlayPause()
-    {
-        if (isPlaying) Pause();
-        else Play();
-    }
-
-    public void PlayButton()
-    {
-        Debug.Log("🟢 Play button clicked");
-        Play();
+        mandalaController?.SetScale(endScale);
     }
 }
