@@ -99,16 +99,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicTrack: {fileID: 8300000, guid: 59b36b1b00b344e88a87e31134c9625a, type: 3}
   audioSource: {fileID: 3455424465804907158, guid: a3efec0bac829419fab9081df2e2afe1, type: 3}
-  timelineDirector: {fileID: 0}
-  timelineAsset: {fileID: 0}
   mandalaController: {fileID: 3055845464709917735}
   imageController: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   emergenceStartTime: 0
-  curiosityStartTime: 3
-  buildupStartTime: 6
-  peakStartTime: 9
-  descentStartTime: 12
-  resolutionStartTime: 15
+  curiosityStartTime: 45
+  buildupStartTime: 80
+  peakStartTime: 130
+  descentStartTime: 180
+  resolutionStartTime: 240
+  peakBurstPrefab: {fileID: 0}
+  ambientParticlesPrefab: {fileID: 0}
 --- !u!114 &3055845464709917735
 MonoBehaviour:
   m_ObjectHideFlags: 0

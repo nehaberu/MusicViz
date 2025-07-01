@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class MandalaImageController : MonoBehaviour
@@ -10,13 +11,12 @@ public class MandalaImageController : MonoBehaviour
     private float targetAlpha = 1f;
     private float fadeSpeed = 1.5f;
 
-
     private void Update()
     {
         // Auto-rotate
         transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-        // Handle dissolve (fade in/out)
+        // Handle dissolve fade in/out
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
@@ -33,28 +33,91 @@ public class MandalaImageController : MonoBehaviour
             return;
         }
 
-        Sprite selectedSprite = null;
-
-        switch (phase.ToLower())
+        Sprite selectedSprite = GetPhaseSprite(phase);
+        if (selectedSprite == null)
         {
-            case "emergence": selectedSprite = emergence; break;
-            case "curiosity": selectedSprite = curiosity; break;
-            case "buildup": selectedSprite = buildup; break;
-            case "peak": selectedSprite = peak; break;
-            case "descent": selectedSprite = descent; break;
-            case "resolution": selectedSprite = resolution; break;
-            default:
-                Debug.LogWarning($"❓ Unknown phase: {phase}");
-                return;
+            Debug.LogWarning($"❓ Unknown or null sprite for phase: {phase}");
+            return;
         }
 
         spriteRenderer.sprite = selectedSprite;
-
         Debug.Log($"🖼 Sprite for phase '{phase}' set to: {selectedSprite?.name ?? "null"}");
-        FadeIn();  // Optional
+
+        FadeIn();
+    }
+
+    public void SetPhaseSmooth(Sprite newSprite, float duration)
+    {
+        StartCoroutine(SmoothTransition(newSprite, duration));
+    }
+
+    public void SetAlpha(float a)
+    {
+    if (spriteRenderer != null)
+    {
+        Color c = spriteRenderer.color;
+        c.a = a;
+        spriteRenderer.color = c;
+    }
     }
 
 
+    IEnumerator SmoothTransition(Sprite newSprite, float duration)
+    {
+        // Fade out current sprite
+        float time = 0f;
+        Color c = spriteRenderer.color;
+        float startAlpha = c.a;
+
+        while (time < duration / 2f)
+        {
+            float t = time / (duration / 2f);
+            c.a = Mathf.Lerp(startAlpha, 0f, t);
+            spriteRenderer.color = c;
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        c.a = 0f;
+        spriteRenderer.color = c;
+        spriteRenderer.sprite = newSprite;
+
+        // Scale down temporarily
+        transform.localScale = Vector3.one * 0.4f;
+
+        // Fade in and scale up
+        time = 0f;
+        while (time < duration / 2f)
+        {
+            float t = time / (duration / 2f);
+            c.a = Mathf.Lerp(0f, 1f, t);
+            spriteRenderer.color = c;
+
+            float scale = Mathf.Lerp(0.4f, 1f, t);
+            transform.localScale = Vector3.one * scale;
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        c.a = 1f;
+        spriteRenderer.color = c;
+        transform.localScale = Vector3.one;
+    }
+
+    private Sprite GetPhaseSprite(string phase)
+    {
+        switch (phase.ToLower())
+        {
+            case "emergence": return emergence;
+            case "curiosity": return curiosity;
+            case "buildup": return buildup;
+            case "peak": return peak;
+            case "descent": return descent;
+            case "resolution": return resolution;
+            default: return null;
+        }
+    }
 
     public void FadeIn() => targetAlpha = 1f;
     public void FadeOut() => targetAlpha = 0f;
