@@ -33,7 +33,11 @@ public class MandalaController : MonoBehaviour
         mandalaTransform.localScale = Vector3.one * currentScale;
     }
 
-    public void SetScale(float scale) => targetScale = scale;
+    public void SetScale(float scale)
+    {
+        transform.localScale = new Vector3(scale, scale, scale);
+    }
+
 
     public void SetColor(Color color)
     {

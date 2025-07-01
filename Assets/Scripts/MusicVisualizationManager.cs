@@ -1,7 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
 
 public class MusicVisualizationManager : MonoBehaviour
 {
@@ -9,27 +7,24 @@ public class MusicVisualizationManager : MonoBehaviour
     [SerializeField] private AudioClip musicTrack;
     [SerializeField] private AudioSource audioSource;
 
-    [Header("Timeline Control")]
-    [SerializeField] private PlayableDirector timelineDirector;
-    [SerializeField] private TimelineAsset timelineAsset;
-
     [Header("Mandala References")]
     [SerializeField] private MandalaController mandalaController;
     [SerializeField] private MandalaImageController imageController;
 
     [Header("Visualization Section Markers")]
     [SerializeField] private float emergenceStartTime = 0f;
-    [SerializeField] private float curiosityStartTime = 10f;
-    [SerializeField] private float buildupStartTime = 20f;
-    [SerializeField] private float peakStartTime = 30f;
-    [SerializeField] private float descentStartTime = 40f;
-    [SerializeField] private float resolutionStartTime = 50f;
+    [SerializeField] private float curiosityStartTime = 45f;
+    [SerializeField] private float buildupStartTime = 80f;
+    [SerializeField] private float peakStartTime = 130f;
+    [SerializeField] private float descentStartTime = 180f;
+    [SerializeField] private float resolutionStartTime = 240f;
 
     private enum MandalaPhase { Emergence, Curiosity, Buildup, Peak, Descent, Resolution }
     private MandalaPhase currentPhase = MandalaPhase.Emergence;
-    private MandalaPhase previousPhase = MandalaPhase.Resolution; // ensures first visual is triggered
+    private MandalaPhase previousPhase = MandalaPhase.Resolution;
 
     private bool isPlaying = false;
+    private Coroutine currentEffectRoutine;
 
     void Start()
     {
@@ -42,38 +37,24 @@ public class MusicVisualizationManager : MonoBehaviour
         {
             audioSource.clip = musicTrack;
             audioSource.Play();
-            Debug.Log("🎶 Forcing music playback manually");
+            Debug.Log("🎶 Music playback started");
         }
         else
         {
-            Debug.LogWarning("❌ AudioSource or MusicTrack missing");
+            Debug.LogWarning("❌ Missing audio source or track!");
         }
 
         isPlaying = true;
-        timelineDirector?.Play();
-
-        ApplyVisualEffects(); // initial visual
+        ApplyVisualEffects();
     }
 
     void Update()
     {
-        if (!isPlaying || audioSource == null)
-        {
-            Debug.LogWarning("❌ Update skipped - Not playing or no audioSource");
+        if (!isPlaying || audioSource == null || !audioSource.isPlaying)
             return;
-        }
-
-        if (!audioSource.isPlaying)
-        {
-            Debug.LogWarning("⛔ Audio is not playing — timeline paused?");
-            return;
-        }
 
         float currentTime = audioSource.time;
-        Debug.Log($"🎵 Music Time: {currentTime:F2}");
-
         UpdateCurrentPhase(currentTime);
-        Debug.Log($"🧠 Current phase = {currentPhase}");
 
         if (currentPhase != previousPhase)
         {
@@ -106,85 +87,77 @@ public class MusicVisualizationManager : MonoBehaviour
         if (imageController != null)
         {
             string phaseName = currentPhase.ToString().ToLower();
-            Debug.Log("🖼 Changing sprite to: " + phaseName);
-            imageController.SetPhase(phaseName);
+            Sprite spriteToUse = GetPhaseSprite(phaseName);
+            imageController.SetPhaseSmooth(spriteToUse, 2f);
         }
+
+        if (currentEffectRoutine != null)
+            StopCoroutine(currentEffectRoutine);
+
+        float duration = TimeUntilNextPhase();
 
         switch (currentPhase)
         {
             case MandalaPhase.Emergence:
-                mandalaController?.SetColor(new Color(0.2f, 0.4f, 0.8f));
-                StartCoroutine(AnimateEmergenceFadeIn(2f));
-                StartCoroutine(AnimateEmergenceScale(2f));
-                break;
-
             case MandalaPhase.Curiosity:
-                mandalaController?.SetColor(new Color(0.2f, 0.7f, 0.8f));
-                mandalaController?.SetScale(1.0f);
-                imageController?.SetRotationSpeed(20f);
-                break;
-
             case MandalaPhase.Buildup:
-                mandalaController?.SetColor(new Color(0.4f, 0.6f, 0.2f, 0.9f));
-                mandalaController?.SetScale(1.2f);
-                imageController?.SetRotationSpeed(30f);
-                break;
-
             case MandalaPhase.Peak:
-                mandalaController?.SetColor(new Color(0.9f, 0.4f, 0.1f));
-                mandalaController?.SetScale(1.5f);
-                imageController?.SetRotationSpeed(40f);
+                currentEffectRoutine = StartCoroutine(AnimateScaleFade(0.2f, 1.0f, 0f, 1f, duration));
                 break;
 
             case MandalaPhase.Descent:
-                mandalaController?.SetColor(new Color(0.6f, 0.4f, 0.8f));
-                mandalaController?.SetScale(1.2f);
-                imageController?.SetRotationSpeed(15f);
-                break;
-
             case MandalaPhase.Resolution:
-                mandalaController?.SetColor(new Color(0.9f, 0.9f, 1.0f));
-                mandalaController?.SetScale(0.8f);
-                imageController?.SetRotationSpeed(5f);
-                imageController?.FadeOut();
+                currentEffectRoutine = StartCoroutine(AnimateScaleFade(1.0f, 0.2f, 1f, 0f, duration));
                 break;
         }
     }
 
-    IEnumerator AnimateEmergenceFadeIn(float duration)
+    private float TimeUntilNextPhase()
     {
-        float time = 0f;
-        imageController?.FadeOut();
+        float currentTime = audioSource.time;
+        if (currentTime < curiosityStartTime) return curiosityStartTime - currentTime;
+        if (currentTime < buildupStartTime) return buildupStartTime - currentTime;
+        if (currentTime < peakStartTime) return peakStartTime - currentTime;
+        if (currentTime < descentStartTime) return descentStartTime - currentTime;
+        if (currentTime < resolutionStartTime) return resolutionStartTime - currentTime;
+        return 20f;
+    }
 
-        while (time < duration)
+    private Sprite GetPhaseSprite(string phase)
+    {
+        switch (phase.ToLower())
         {
-            float t = time / duration;
-            float alpha = Mathf.Lerp(0f, 1f, t);
-            if (imageController?.spriteRenderer != null)
-            {
-                Color c = imageController.spriteRenderer.color;
-                c.a = alpha;
-                imageController.spriteRenderer.color = c;
-            }
-            time += Time.deltaTime;
-            yield return null;
+            case "emergence": return imageController.emergence;
+            case "curiosity": return imageController.curiosity;
+            case "buildup": return imageController.buildup;
+            case "peak": return imageController.peak;
+            case "descent": return imageController.descent;
+            case "resolution": return imageController.resolution;
+            default: return null;
         }
     }
 
-    IEnumerator AnimateEmergenceScale(float duration)
+    private IEnumerator AnimateScaleFade(float startScale, float endScale, float startAlpha, float endAlpha, float duration)
     {
         float time = 0f;
-        float startScale = 0.2f;
-        float endScale = 0.8f;
+        imageController?.SetRotationSpeed(8f);
 
         while (time < duration)
         {
             float t = time / duration;
-            mandalaController?.SetScale(Mathf.Lerp(startScale, endScale, t));
+
+            float scale = Mathf.Lerp(startScale, endScale, t);
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+
+            mandalaController?.SetScale(scale);
+            imageController?.SetAlpha(alpha);
+
             time += Time.deltaTime;
             yield return null;
         }
 
+        // Final state
         mandalaController?.SetScale(endScale);
+        imageController?.SetAlpha(endAlpha);
     }
 }
