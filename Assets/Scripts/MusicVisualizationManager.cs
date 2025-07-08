@@ -10,14 +10,15 @@ public class MusicVisualizationManager : MonoBehaviour
     [Header("Mandala References")]
     [SerializeField] private MandalaController mandalaController;
     [SerializeField] private MandalaImageController imageController;
+    [SerializeField] private MandalaShaderController shaderController; // 🔥 NEW
 
     [Header("Visualization Section Markers")]
     [SerializeField] private float emergenceStartTime = 0f;
-    [SerializeField] private float curiosityStartTime = 45f;
-    [SerializeField] private float buildupStartTime = 80f;
-    [SerializeField] private float peakStartTime = 130f;
-    [SerializeField] private float descentStartTime = 180f;
-    [SerializeField] private float resolutionStartTime = 240f;
+    [SerializeField] private float curiosityStartTime = 30f;
+    [SerializeField] private float buildupStartTime = 45f;
+    [SerializeField] private float peakStartTime = 60f;
+    [SerializeField] private float descentStartTime = 80f;
+    [SerializeField] private float resolutionStartTime = 100f;
 
     private enum MandalaPhase { Emergence, Curiosity, Buildup, Peak, Descent, Resolution }
     private MandalaPhase currentPhase = MandalaPhase.Emergence;
@@ -91,6 +92,33 @@ public class MusicVisualizationManager : MonoBehaviour
             imageController.SetPhaseSmooth(spriteToUse, 2f);
         }
 
+        // ✨ Apply dynamic shader effects
+        if (shaderController != null)
+        {
+            switch (currentPhase)
+            {
+                case MandalaPhase.Emergence:
+                    shaderController.ApplyEmergencePreset();
+                    break;
+                case MandalaPhase.Curiosity:
+                    shaderController.ApplyCuriosityPreset();
+                    break;
+                case MandalaPhase.Buildup:
+                    shaderController.ApplyBuildupPreset();
+                    break;
+                case MandalaPhase.Peak:
+                    shaderController.ApplyPeakPreset();
+                    break;
+                case MandalaPhase.Descent:
+                    shaderController.ApplyDescentPreset();
+                    break;
+                case MandalaPhase.Resolution:
+                    shaderController.ApplyResolutionPreset();
+                    break;
+            }
+        }
+
+        // Animate scale + fade
         if (currentEffectRoutine != null)
             StopCoroutine(currentEffectRoutine);
 

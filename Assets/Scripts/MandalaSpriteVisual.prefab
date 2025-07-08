@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5165475552401349092}
   - component: {fileID: 8630493039672743007}
   - component: {fileID: 5051505938757806909}
+  - component: {fileID: -8590784742674560930}
   m_Layer: 0
   m_Name: MandalaSpriteVisual
   m_TagString: Untagged
@@ -26,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984144490873265427}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: 0.96965367, w: -0.24448282}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.30779678, y: 0.30779678, z: 0.30779678}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -74,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: ce17161e4230d45418ff95ee9f52f713, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e553f4803ce2849efa3cfc22826c82c5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,10 +98,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ea0988c4aa2844e089c89198a854763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 8630493039672743007}
+  spriteRenderer: {fileID: 0}
   emergence: {fileID: 21300000, guid: ce17161e4230d45418ff95ee9f52f713, type: 3}
   curiosity: {fileID: 21300000, guid: 35a7512c3140042758aa796643bb914f, type: 3}
   buildup: {fileID: 21300000, guid: e553f4803ce2849efa3cfc22826c82c5, type: 3}
   peak: {fileID: 21300000, guid: 0bc2c65e0b569497f851821bf500fcae, type: 3}
   descent: {fileID: 21300000, guid: 1adff44a48e5e4ef1970f304368c6dd9, type: 3}
   resolution: {fileID: 21300000, guid: 7707f185756e14dbe8ce9a4e1c4b3a9c, type: 3}
+--- !u!114 &-8590784742674560930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984144490873265427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e54ba1788b51f40a1b17495bfb1fb0a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mandalaMaterial: {fileID: 2100000, guid: b6d7b7ec904574faabd296acba9d0a53, type: 2}
+  baseColor: {r: 0, g: 0, b: 1, a: 1}
+  accentColor: {r: 0, g: 1, b: 1, a: 1}
+  colorTransitionSpeed: 1
+  patternIntensity: 1
+  patternScale: 3
+  patternSpeed: 1
+  glowIntensity: 0.5

@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: e54ba1788b51f40a1b17495bfb1fb0a6
+guid: d17b87d8132f2744989d8a02a65a5d19
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - mandalaMaterial: {fileID: 2100000, guid: dbc5f4981eddda147b48f06ffd9e6068, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

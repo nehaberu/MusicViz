@@ -102,13 +102,11 @@ MonoBehaviour:
   mandalaController: {fileID: 3055845464709917735}
   imageController: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
   emergenceStartTime: 0
-  curiosityStartTime: 45
-  buildupStartTime: 80
-  peakStartTime: 130
-  descentStartTime: 180
-  resolutionStartTime: 240
-  peakBurstPrefab: {fileID: 0}
-  ambientParticlesPrefab: {fileID: 0}
+  curiosityStartTime: 30
+  buildupStartTime: 45
+  peakStartTime: 60
+  descentStartTime: 80
+  resolutionStartTime: 100
 --- !u!114 &3055845464709917735
 MonoBehaviour:
   m_ObjectHideFlags: 0

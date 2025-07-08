@@ -16,7 +16,7 @@ public class MandalaImageController : MonoBehaviour
         // Auto-rotate
         transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-        // Handle dissolve fade in/out
+        // Smooth alpha fade
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
@@ -40,9 +40,15 @@ public class MandalaImageController : MonoBehaviour
             return;
         }
 
-        spriteRenderer.sprite = selectedSprite;
-        Debug.Log($"🖼 Sprite for phase '{phase}' set to: {selectedSprite?.name ?? "null"}");
+        // Save the current material (with custom shader) before changing sprite
+        Material currentMat = spriteRenderer.sharedMaterial;
 
+        spriteRenderer.sprite = selectedSprite;
+
+        // Re-apply the custom material to prevent Unity from using Sprites-Default
+        spriteRenderer.sharedMaterial = currentMat;
+
+        Debug.Log($"🖼 Sprite set for phase '{phase}' → {selectedSprite?.name}");
         FadeIn();
     }
 
@@ -53,22 +59,21 @@ public class MandalaImageController : MonoBehaviour
 
     public void SetAlpha(float a)
     {
-    if (spriteRenderer != null)
-    {
-        Color c = spriteRenderer.color;
-        c.a = a;
-        spriteRenderer.color = c;
+        if (spriteRenderer != null)
+        {
+            Color c = spriteRenderer.color;
+            c.a = a;
+            spriteRenderer.color = c;
+        }
     }
-    }
-
 
     IEnumerator SmoothTransition(Sprite newSprite, float duration)
     {
-        // Fade out current sprite
         float time = 0f;
         Color c = spriteRenderer.color;
         float startAlpha = c.a;
 
+        // Fade out
         while (time < duration / 2f)
         {
             float t = time / (duration / 2f);
@@ -80,12 +85,16 @@ public class MandalaImageController : MonoBehaviour
 
         c.a = 0f;
         spriteRenderer.color = c;
-        spriteRenderer.sprite = newSprite;
 
-        // Scale down temporarily
+        // Preserve material during sprite change
+        Material currentMat = spriteRenderer.sharedMaterial;
+        spriteRenderer.sprite = newSprite;
+        spriteRenderer.sharedMaterial = currentMat;
+
+        // Mini scale pop effect
         transform.localScale = Vector3.one * 0.4f;
 
-        // Fade in and scale up
+        // Fade in & scale back
         time = 0f;
         while (time < duration / 2f)
         {
