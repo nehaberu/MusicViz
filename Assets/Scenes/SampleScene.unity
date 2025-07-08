@@ -5419,7 +5419,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mandalaController: {fileID: 697907274}
-  shaderController: {fileID: 0}
+  shaderController: {fileID: 4234098324289362310}
 --- !u!1001 &333717462321019391
 PrefabInstance:
   m_ObjectHideFlags: 0
