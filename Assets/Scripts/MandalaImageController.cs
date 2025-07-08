@@ -11,6 +11,8 @@ public class MandalaImageController : MonoBehaviour
     private float targetAlpha = 1f;
     private float fadeSpeed = 1.5f;
 
+    [SerializeField] private float transitionDuration = 1.5f; // ⏱️ Adjustable in Inspector
+
     private void Update()
     {
         // Auto-rotate
@@ -40,12 +42,8 @@ public class MandalaImageController : MonoBehaviour
             return;
         }
 
-        // Save the current material (with custom shader) before changing sprite
         Material currentMat = spriteRenderer.sharedMaterial;
-
         spriteRenderer.sprite = selectedSprite;
-
-        // Re-apply the custom material to prevent Unity from using Sprites-Default
         spriteRenderer.sharedMaterial = currentMat;
 
         Debug.Log($"🖼 Sprite set for phase '{phase}' → {selectedSprite?.name}");
@@ -73,12 +71,17 @@ public class MandalaImageController : MonoBehaviour
         Color c = spriteRenderer.color;
         float startAlpha = c.a;
 
-        // Fade out
+        Vector3 originalScale = transform.localScale;
+        Vector3 popScale = originalScale * 1.1f;
+        Vector3 miniScale = originalScale * 0.4f;
+
+        // Fade out & shrink
         while (time < duration / 2f)
         {
-            float t = time / (duration / 2f);
+            float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
             c.a = Mathf.Lerp(startAlpha, 0f, t);
             spriteRenderer.color = c;
+            transform.localScale = Vector3.Lerp(originalScale, miniScale, t);
             time += Time.deltaTime;
             yield return null;
         }
@@ -86,32 +89,27 @@ public class MandalaImageController : MonoBehaviour
         c.a = 0f;
         spriteRenderer.color = c;
 
-        // Preserve material during sprite change
         Material currentMat = spriteRenderer.sharedMaterial;
         spriteRenderer.sprite = newSprite;
         spriteRenderer.sharedMaterial = currentMat;
 
-        // Mini scale pop effect
-        transform.localScale = Vector3.one * 0.4f;
+        transform.localScale = popScale;
 
-        // Fade in & scale back
+        // Fade in & bounce back
         time = 0f;
         while (time < duration / 2f)
         {
-            float t = time / (duration / 2f);
+            float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
             c.a = Mathf.Lerp(0f, 1f, t);
             spriteRenderer.color = c;
-
-            float scale = Mathf.Lerp(0.4f, 1f, t);
-            transform.localScale = Vector3.one * scale;
-
+            transform.localScale = Vector3.Lerp(popScale, originalScale, t);
             time += Time.deltaTime;
             yield return null;
         }
 
         c.a = 1f;
         spriteRenderer.color = c;
-        transform.localScale = Vector3.one;
+        transform.localScale = originalScale;
     }
 
     private Sprite GetPhaseSprite(string phase)

@@ -8,7 +8,7 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 {
     public MandalaController mandalaController;
     public MandalaShaderController shaderController;
-    public MandalaImageController imageController; // ✅ NEW: For sprite changes
+    public MandalaImageController imageController;
 
     private AudioSource audioSource;
     private float[] spectrum = new float[128];
@@ -16,7 +16,7 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 
     private enum Mood { Calm, Curious, Intense, Chaotic, Peaceful }
     private Mood currentMood;
-    private Mood previousMood = Mood.Peaceful; // ✅ Prevent repeated triggers
+    private Mood previousMood = Mood.Peaceful;
 
     void Start()
     {
@@ -32,21 +32,15 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 
     void Update()
     {
-        // 🎧 Get current audio data
         audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Blackman);
         audioSource.GetOutputData(samples, 0);
 
-        // 📈 Calculate loudness (RMS)
         float rms = Mathf.Sqrt(samples.Average(s => s * s));
-
-        // 🔊 Calculate spectral centroid (for mood logic)
         float centroid = ComputeSpectralCentroid(spectrum);
-
-        // 🎚 Intensity used for scaling & rotation
         float intensity = Mathf.Clamp01(rms * 25f);
+
         mandalaController?.SetRotationSpeed(intensity);
 
-        // 🎨 Apply visuals
         ApplyMoodBasedOnRMSAndCentroid(rms, centroid);
     }
 
@@ -59,14 +53,14 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
             num += freq * spectrum[i];
             denom += spectrum[i];
         }
-        return denom > 0 ? num / denom / 20000f : 0f; // Normalize to 0–1 range
+        return denom > 0 ? num / denom / 20000f : 0f;
     }
 
     void ApplyMoodBasedOnRMSAndCentroid(float rms, float centroid)
     {
-        if (mandalaController == null || shaderController == null) return;
+        if (mandalaController == null || shaderController == null || imageController == null) return;
 
-        // 🎭 Mood classification
+        // Mood classification
         if (rms < 0.03f && centroid < 0.2f)
             currentMood = Mood.Calm;
         else if (rms < 0.06f && centroid < 0.35f)
@@ -76,49 +70,49 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         else
             currentMood = Mood.Chaotic;
 
-        // ✅ Skip if mood hasn't changed
+        // Skip if mood hasn't changed
         if (currentMood == previousMood) return;
         previousMood = currentMood;
 
-        // 🎨 Apply mood-based visuals
+        // Apply mood-based visuals
         switch (currentMood)
         {
             case Mood.Calm:
                 shaderController.SetBaseColor(Color.blue);
                 shaderController.SetGlowIntensity(0.2f);
                 mandalaController.SetScale(1.0f);
-                imageController?.SetPhase("emergence");
+                imageController.SetPhaseSmooth(imageController.emergence, 1.5f);
                 break;
 
             case Mood.Curious:
-                shaderController.SetBaseColor(new Color(0f, 0.8f, 0.8f)); // Teal
+                shaderController.SetBaseColor(new Color(0f, 0.8f, 0.8f));
                 shaderController.SetGlowIntensity(0.4f);
                 mandalaController.SetScale(1.3f);
-                imageController?.SetPhase("curiosity");
+                imageController.SetPhaseSmooth(imageController.curiosity, 1.5f);
                 break;
 
             case Mood.Intense:
                 shaderController.SetBaseColor(Color.yellow);
                 shaderController.SetGlowIntensity(0.6f);
                 mandalaController.SetScale(1.7f);
-                imageController?.SetPhase("buildup");
+                imageController.SetPhaseSmooth(imageController.buildup, 1.5f);
                 break;
 
             case Mood.Chaotic:
                 shaderController.SetBaseColor(Color.red);
                 shaderController.SetGlowIntensity(0.9f);
                 mandalaController.SetScale(2.0f);
-                imageController?.SetPhase("peak");
+                imageController.SetPhaseSmooth(imageController.peak, 1.5f);
                 break;
 
             case Mood.Peaceful:
                 shaderController.SetBaseColor(Color.white);
                 shaderController.SetGlowIntensity(0.1f);
                 mandalaController.SetScale(0.8f);
-                imageController?.SetPhase("resolution");
+                imageController.SetPhaseSmooth(imageController.resolution, 1.5f);
                 break;
         }
 
-        Debug.Log($"🎵 Mood: {currentMood}, RMS: {rms:F3}, Centroid: {centroid:F3}");
+        Debug.Log($"🎵 Mood changed to: {currentMood} | RMS: {rms:F3}, Centroid: {centroid:F3}");
     }
 }
