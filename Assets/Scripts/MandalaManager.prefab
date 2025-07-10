@@ -97,10 +97,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b7b0883b21484eeba1596a09088521a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicTrack: {fileID: 8300000, guid: 59b36b1b00b344e88a87e31134c9625a, type: 3}
+  musicTrack: {fileID: 8300000, guid: ffd78928cb7c94c9488e7549aa52a0ce, type: 3}
   audioSource: {fileID: 3455424465804907158, guid: a3efec0bac829419fab9081df2e2afe1, type: 3}
   mandalaController: {fileID: 3055845464709917735}
   imageController: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
+  shaderController: {fileID: 0}
   emergenceStartTime: 0
   curiosityStartTime: 30
   buildupStartTime: 45
@@ -123,3 +124,6 @@ MonoBehaviour:
   initialScale: 1
   mandalaMaterial: {fileID: 2100000, guid: b6d7b7ec904574faabd296acba9d0a53, type: 2}
   initialColor: {r: 1, g: 1, b: 1, a: 1}
+  scaleLerpSpeed: 2
+  rotationLerpSpeed: 5
+  colorLerpSpeed: 2

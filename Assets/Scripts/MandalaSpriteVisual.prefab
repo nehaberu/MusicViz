@@ -27,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984144490873265427}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.908393, w: -0.41811728}
+  m_LocalRotation: {x: -0, y: -0, z: -0.3486184, w: -0.9372648}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.88973033, y: 0.88973033, z: 0.88973033}
+  m_LocalScale: {x: 0.6294877, y: 0.6294877, z: 0.6294877}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: e553f4803ce2849efa3cfc22826c82c5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8bc1fbcef6eaa4184ae15c0f7d708c56, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100,9 +100,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 0}
   emergence: {fileID: 21300000, guid: ce17161e4230d45418ff95ee9f52f713, type: 3}
-  curiosity: {fileID: 21300000, guid: 35a7512c3140042758aa796643bb914f, type: 3}
-  buildup: {fileID: 21300000, guid: e553f4803ce2849efa3cfc22826c82c5, type: 3}
-  peak: {fileID: 21300000, guid: 0bc2c65e0b569497f851821bf500fcae, type: 3}
+  curiosity: {fileID: 21300000, guid: 38b103ed215df410ea8a083fa0f4eecf, type: 3}
+  buildup: {fileID: 21300000, guid: 8bc1fbcef6eaa4184ae15c0f7d708c56, type: 3}
+  peak: {fileID: 21300000, guid: c230080bb3dd44a16a33bff4ebd75f1b, type: 3}
   descent: {fileID: 21300000, guid: 1adff44a48e5e4ef1970f304368c6dd9, type: 3}
   resolution: {fileID: 21300000, guid: 7707f185756e14dbe8ce9a4e1c4b3a9c, type: 3}
   transitionDuration: 1.5
