@@ -5,20 +5,22 @@ public class MandalaImageController : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
 
-    public Sprite emergence, curiosity, buildup, peak, descent, resolution;
+    // 🌸 Add all 8 sprites here
+    public Sprite emergence, curiosity, buildup, peak;
+    public Sprite descent, resolution, reflection, meditation;
 
     private float rotationSpeed = 20f;
     private float targetAlpha = 1f;
     private float fadeSpeed = 1.5f;
 
-    [SerializeField] private float transitionDuration = 1.5f; // ⏱️ Adjustable in Inspector
+    [SerializeField] private float transitionDuration = 1.5f;
 
     private void Update()
     {
-        // Auto-rotate
+        // 🌀 Auto-rotate
         transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-        // Smooth alpha fade
+        // ✨ Smooth alpha fade
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
@@ -75,7 +77,7 @@ public class MandalaImageController : MonoBehaviour
         Vector3 popScale = originalScale * 1.1f;
         Vector3 miniScale = originalScale * 0.4f;
 
-        // Fade out & shrink
+        // 🌘 Fade out and shrink
         while (time < duration / 2f)
         {
             float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
@@ -95,7 +97,7 @@ public class MandalaImageController : MonoBehaviour
 
         transform.localScale = popScale;
 
-        // Fade in & bounce back
+        // 🌕 Fade in and pop back
         time = 0f;
         while (time < duration / 2f)
         {
@@ -122,6 +124,8 @@ public class MandalaImageController : MonoBehaviour
             case "peak": return peak;
             case "descent": return descent;
             case "resolution": return resolution;
+            case "reflection": return reflection;
+            case "meditation": return meditation;
             default: return null;
         }
     }

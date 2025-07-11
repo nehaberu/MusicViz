@@ -11,6 +11,8 @@ MonoImporter:
   - peak: {fileID: 21300000, guid: c230080bb3dd44a16a33bff4ebd75f1b, type: 3}
   - descent: {fileID: 21300000, guid: 1adff44a48e5e4ef1970f304368c6dd9, type: 3}
   - resolution: {fileID: 21300000, guid: 7707f185756e14dbe8ce9a4e1c4b3a9c, type: 3}
+  - reflection: {fileID: 21300000, guid: f10de096046ab471ab833cab18f3aaf4, type: 3}
+  - meditation: {fileID: 21300000, guid: 738b3ac4ff97241b584adb0b704d2e18, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

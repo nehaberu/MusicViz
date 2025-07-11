@@ -14,9 +14,17 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
     private float[] spectrum = new float[128];
     private float[] samples = new float[128];
 
-    private enum Mood { Calm, Curious, Intense, Chaotic, Peaceful }
+    private enum Mood
+    {
+        Emergence, Curiosity, Buildup, Peak,
+        Descent, Resolution, Reflection, Meditation
+    }
+
+    public BackgroundPanner backgroundPanner;
     private Mood currentMood;
-    private Mood previousMood = Mood.Peaceful;
+    private Mood previousMood = Mood.Resolution;
+    private float lastMoodChangeTime = 0f;
+    private float minMoodDuration = 2.5f;
 
     void Start()
     {
@@ -38,10 +46,11 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         float rms = Mathf.Sqrt(samples.Average(s => s * s));
         float centroid = ComputeSpectralCentroid(spectrum);
         float intensity = Mathf.Clamp01(rms * 25f);
+        backgroundPanner?.SetIntensity(intensity);
+
 
         mandalaController?.SetRotationSpeed(intensity);
-
-        ApplyMoodBasedOnRMSAndCentroid(rms, centroid);
+        ApplyMoodBasedOnAudio(rms, centroid);
     }
 
     float ComputeSpectralCentroid(float[] spectrum)
@@ -56,63 +65,95 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         return denom > 0 ? num / denom / 20000f : 0f;
     }
 
-    void ApplyMoodBasedOnRMSAndCentroid(float rms, float centroid)
+    void ApplyMoodBasedOnAudio(float rms, float centroid)
     {
-        if (mandalaController == null || shaderController == null || imageController == null) return;
+        if (mandalaController == null || shaderController == null || imageController == null)
+            return;
 
-        // Mood classification
-        if (rms < 0.03f && centroid < 0.2f)
-            currentMood = Mood.Calm;
+        // 🎯 Adjust thresholds to match music dynamics
+        if (rms < 0.015f)
+            currentMood = Mood.Meditation;
+        else if (rms < 0.03f && centroid < 0.2f)
+            currentMood = Mood.Emergence;
         else if (rms < 0.06f && centroid < 0.35f)
-            currentMood = Mood.Curious;
-        else if (rms < 0.1f)
-            currentMood = Mood.Intense;
+            currentMood = Mood.Curiosity;
+        else if (rms < 0.1f && centroid < 0.5f)
+            currentMood = Mood.Buildup;
+        else if (rms < 0.15f)
+            currentMood = Mood.Peak;
+        else if (rms < 0.2f)
+            currentMood = Mood.Descent;
+        else if (rms < 0.25f)
+            currentMood = Mood.Resolution;
         else
-            currentMood = Mood.Chaotic;
+            currentMood = Mood.Reflection;
 
-        // Skip if mood hasn't changed
-        if (currentMood == previousMood) return;
+        // ⏳ Hold mood for a minimum time
+        if (currentMood == previousMood || Time.time - lastMoodChangeTime < minMoodDuration)
+            return;
+
         previousMood = currentMood;
+        lastMoodChangeTime = Time.time;
 
-        // Apply mood-based visuals
         switch (currentMood)
         {
-            case Mood.Calm:
-                shaderController.SetBaseColor(Color.blue);
-                shaderController.SetGlowIntensity(0.2f);
+            case Mood.Emergence:
+                shaderController.SetBaseColor(new Color(0.2f, 1f, 0.5f));  // minty green
+                shaderController.SetGlowIntensity(0.25f);
                 mandalaController.SetScale(1.0f);
                 imageController.SetPhaseSmooth(imageController.emergence, 1.5f);
                 break;
 
-            case Mood.Curious:
-                shaderController.SetBaseColor(new Color(0f, 0.8f, 0.8f));
+            case Mood.Curiosity:
+                shaderController.SetBaseColor(new Color(0f, 0.8f, 0.9f));
                 shaderController.SetGlowIntensity(0.4f);
-                mandalaController.SetScale(1.3f);
+                mandalaController.SetScale(1.2f);
                 imageController.SetPhaseSmooth(imageController.curiosity, 1.5f);
                 break;
 
-            case Mood.Intense:
+            case Mood.Buildup:
                 shaderController.SetBaseColor(Color.yellow);
-                shaderController.SetGlowIntensity(0.6f);
-                mandalaController.SetScale(1.7f);
+                shaderController.SetGlowIntensity(0.55f);
+                mandalaController.SetScale(1.4f);
                 imageController.SetPhaseSmooth(imageController.buildup, 1.5f);
                 break;
 
-            case Mood.Chaotic:
-                shaderController.SetBaseColor(Color.red);
-                shaderController.SetGlowIntensity(0.9f);
-                mandalaController.SetScale(2.0f);
+            case Mood.Peak:
+                shaderController.SetBaseColor(new Color(1f, 0.3f, 0.1f)); // fiery orange
+                shaderController.SetGlowIntensity(0.8f);
+                mandalaController.SetScale(1.8f);
                 imageController.SetPhaseSmooth(imageController.peak, 1.5f);
                 break;
 
-            case Mood.Peaceful:
+            case Mood.Descent:
+                shaderController.SetBaseColor(new Color(0.8f, 0.5f, 1f)); // lavender
+                shaderController.SetGlowIntensity(0.3f);
+                mandalaController.SetScale(1.2f);
+                imageController.SetPhaseSmooth(imageController.descent, 1.5f);
+                break;
+
+            case Mood.Resolution:
                 shaderController.SetBaseColor(Color.white);
                 shaderController.SetGlowIntensity(0.1f);
-                mandalaController.SetScale(0.8f);
+                mandalaController.SetScale(0.9f);
                 imageController.SetPhaseSmooth(imageController.resolution, 1.5f);
+                break;
+
+            case Mood.Reflection:
+                shaderController.SetBaseColor(new Color(1f, 0.5f, 0.9f)); // pink-purplish
+                shaderController.SetGlowIntensity(0.2f);
+                mandalaController.SetScale(1.1f);
+                imageController.SetPhaseSmooth(imageController.reflection, 1.5f);
+                break;
+
+            case Mood.Meditation:
+                shaderController.SetBaseColor(new Color(0.5f, 0.7f, 1f)); // bluish
+                shaderController.SetGlowIntensity(0.15f);
+                mandalaController.SetScale(0.85f);
+                imageController.SetPhaseSmooth(imageController.meditation, 1.5f);
                 break;
         }
 
-        Debug.Log($"🎵 Mood changed to: {currentMood} | RMS: {rms:F3}, Centroid: {centroid:F3}");
+        Debug.Log($"🌈 Mood changed to: {currentMood} | RMS: {rms:F3}, Centroid: {centroid:F3}");
     }
 }

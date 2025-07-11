@@ -253,10 +253,12 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1726763482}
   emergence: {fileID: 21300000, guid: ce17161e4230d45418ff95ee9f52f713, type: 3}
   curiosity: {fileID: 21300000, guid: 38b103ed215df410ea8a083fa0f4eecf, type: 3}
-  buildup: {fileID: 21300000, guid: 8bc1fbcef6eaa4184ae15c0f7d708c56, type: 3}
+  buildup: {fileID: 21300000, guid: 54ad789f645e3492bb0e97d3c7fcbf80, type: 3}
   peak: {fileID: 21300000, guid: c230080bb3dd44a16a33bff4ebd75f1b, type: 3}
   descent: {fileID: 21300000, guid: 1adff44a48e5e4ef1970f304368c6dd9, type: 3}
   resolution: {fileID: 21300000, guid: 7707f185756e14dbe8ce9a4e1c4b3a9c, type: 3}
+  reflection: {fileID: 21300000, guid: f10de096046ab471ab833cab18f3aaf4, type: 3}
+  meditation: {fileID: 21300000, guid: 738b3ac4ff97241b584adb0b704d2e18, type: 3}
   transitionDuration: 1.5
 --- !u!212 &460174417
 SpriteRenderer:
@@ -10361,6 +10363,7 @@ MonoBehaviour:
   mandalaController: {fileID: 697907274}
   shaderController: {fileID: 4234098324289362310}
   imageController: {fileID: 847195032}
+  backgroundPanner: {fileID: 2008042728}
 --- !u!1 &2008042723
 GameObject:
   m_ObjectHideFlags: 0
@@ -10480,8 +10483,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 728872a8d30ab4529a422ab4e3901dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeedX: 0.01
-  scrollSpeedY: 0.005
+  audioIntensity: 0
+  baseSpeed: 0.01
+  maxSpeed: 0.08
 --- !u!1001 &333717462321019391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10569,11 +10573,19 @@ PrefabInstance:
     - target: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
       propertyPath: buildup
       value: 
-      objectReference: {fileID: 21300000, guid: 8bc1fbcef6eaa4184ae15c0f7d708c56, type: 3}
+      objectReference: {fileID: 21300000, guid: 54ad789f645e3492bb0e97d3c7fcbf80, type: 3}
     - target: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
       propertyPath: curiosity
       value: 
       objectReference: {fileID: 21300000, guid: 38b103ed215df410ea8a083fa0f4eecf, type: 3}
+    - target: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
+      propertyPath: meditation
+      value: 
+      objectReference: {fileID: 21300000, guid: 738b3ac4ff97241b584adb0b704d2e18, type: 3}
+    - target: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
+      propertyPath: reflection
+      value: 
+      objectReference: {fileID: 21300000, guid: f10de096046ab471ab833cab18f3aaf4, type: 3}
     - target: {fileID: 5051505938757806909, guid: c6a22d28357674bb689e38010292ff39, type: 3}
       propertyPath: dynamicMode
       value: 1
