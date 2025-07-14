@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Controls mandala's scale, rotation, and color based on mood input
 public class MandalaController : MonoBehaviour
 {
     [SerializeField] private GameObject mandalaObject;
@@ -27,8 +28,6 @@ public class MandalaController : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("✅ Unity IS logging");
-
         if (mandalaObject == null)
             mandalaObject = this.gameObject;
 
@@ -49,30 +48,28 @@ public class MandalaController : MonoBehaviour
     {
         if (mandalaTransform == null || mandalaMaterial == null) return;
 
-        // 🌱 Smooth scale change
+        // Scale animation
         currentScale = Mathf.Lerp(currentScale, targetScale, Time.deltaTime * scaleLerpSpeed);
         mandalaTransform.localScale = Vector3.one * currentScale;
 
-        // 🌀 Smooth rotation speed change
+        // Rotation animation
         rotationSpeed = Mathf.Lerp(rotationSpeed, targetRotationSpeed, Time.deltaTime * rotationLerpSpeed);
         mandalaTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
 
-        // 🎨 Smooth color transition
+        // Base color transition
         currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * colorLerpSpeed);
         mandalaMaterial.color = currentColor;
 
-        // 🌟 Smooth emission glow
+        // Emission glow transition
         currentEmission = Color.Lerp(currentEmission, targetEmission, Time.deltaTime * colorLerpSpeed);
         mandalaMaterial.SetColor("_EmissionColor", currentEmission);
     }
 
-    // External control for scale
     public void SetScale(float scale)
     {
         targetScale = scale;
     }
 
-    // Set base color and glow smoothly
     public void SetColor(Color color)
     {
         targetColor = color;
@@ -91,5 +88,4 @@ public class MandalaController : MonoBehaviour
         targetRotationSpeed = Mathf.Lerp(minSpeed, maxSpeed, speedFactor);
     }
 
-    public void SetComplexity(int s, int l) { /* Not used yet */ }
 }

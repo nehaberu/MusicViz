@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class MandalaShaderController : MonoBehaviour
 {
+    // This script controls shader parameters like color, glow, and pattern effects
+
     [Header("Material Settings")]
     [SerializeField] private Material mandalaMaterial;
 
@@ -17,7 +19,6 @@ public class MandalaShaderController : MonoBehaviour
     [SerializeField] [Range(0, 5)] private float patternSpeed = 1.0f;
     [SerializeField] [Range(0, 1)] private float glowIntensity = 0.5f;
 
-    // Shader property IDs
     private int baseColorID;
     private int accentColorID;
     private int patternIntensityID;
@@ -29,9 +30,8 @@ public class MandalaShaderController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private float animationTime = 0f;
 
-    private void Awake()
+    void Awake()
     {
-        // Cache property IDs
         baseColorID = Shader.PropertyToID("_BaseColor");
         accentColorID = Shader.PropertyToID("_AccentColor");
         patternIntensityID = Shader.PropertyToID("_PatternIntensity");
@@ -40,29 +40,23 @@ public class MandalaShaderController : MonoBehaviour
         glowIntensityID = Shader.PropertyToID("_GlowIntensity");
         timeID = Shader.PropertyToID("_Time");
 
-        // Get SpriteRenderer
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Assign material from sprite if not explicitly set
         if (mandalaMaterial == null && spriteRenderer != null)
-        {
             mandalaMaterial = spriteRenderer.material;
-        }
 
         UpdateMaterialProperties();
     }
 
-    private void Update()
+    void Update()
     {
         animationTime += Time.deltaTime;
 
         if (mandalaMaterial != null)
-        {
             mandalaMaterial.SetFloat(timeID, animationTime);
-        }
     }
 
-    private void UpdateMaterialProperties()
+    void UpdateMaterialProperties()
     {
         if (mandalaMaterial == null) return;
 
@@ -74,19 +68,19 @@ public class MandalaShaderController : MonoBehaviour
         mandalaMaterial.SetFloat(glowIntensityID, glowIntensity);
     }
 
-    // Public setters
+    // Public methods to update visual properties
     public void SetBaseColor(Color color)
     {
         baseColor = color;
         if (mandalaMaterial != null)
-            mandalaMaterial.SetColor(baseColorID, baseColor);
+            mandalaMaterial.SetColor(baseColorID, color);
     }
 
     public void SetAccentColor(Color color)
     {
         accentColor = color;
         if (mandalaMaterial != null)
-            mandalaMaterial.SetColor(accentColorID, accentColor);
+            mandalaMaterial.SetColor(accentColorID, color);
     }
 
     public void SetPatternIntensity(float intensity)
@@ -114,14 +108,14 @@ public class MandalaShaderController : MonoBehaviour
     {
         glowIntensity = Mathf.Clamp01(intensity);
         if (mandalaMaterial != null)
-            mandalaMaterial.SetFloat(glowIntensityID, glowIntensity);
+            mandalaMaterial.SetFloat(glowIntensityID, intensity);
     }
 
-    // Preset Configurations
+    // Optional: You can call these presets if you want preconfigured moods
     public void ApplyEmergencePreset()
     {
         SetBaseColor(new Color(0.2f, 0.4f, 0.8f));
-        SetAccentColor(new Color(0.3f, 0.5f, 0.9f, 0.7f));
+        SetAccentColor(new Color(0.3f, 0.5f, 0.9f));
         SetPatternIntensity(0.5f);
         SetPatternScale(1.5f);
         SetPatternSpeed(0.5f);
@@ -131,7 +125,7 @@ public class MandalaShaderController : MonoBehaviour
     public void ApplyCuriosityPreset()
     {
         SetBaseColor(new Color(0.2f, 0.7f, 0.8f));
-        SetAccentColor(new Color(0.3f, 0.8f, 0.7f, 0.8f));
+        SetAccentColor(new Color(0.3f, 0.8f, 0.7f));
         SetPatternIntensity(1.0f);
         SetPatternScale(2.0f);
         SetPatternSpeed(0.8f);
@@ -141,7 +135,7 @@ public class MandalaShaderController : MonoBehaviour
     public void ApplyBuildupPreset()
     {
         SetBaseColor(new Color(0.4f, 0.6f, 0.2f));
-        SetAccentColor(new Color(0.7f, 0.6f, 0.2f, 0.9f));
+        SetAccentColor(new Color(0.7f, 0.6f, 0.2f));
         SetPatternIntensity(2.0f);
         SetPatternScale(3.0f);
         SetPatternSpeed(1.2f);
@@ -151,7 +145,7 @@ public class MandalaShaderController : MonoBehaviour
     public void ApplyPeakPreset()
     {
         SetBaseColor(new Color(0.9f, 0.4f, 0.1f));
-        SetAccentColor(new Color(1.0f, 0.7f, 0.0f, 1.0f));
+        SetAccentColor(new Color(1.0f, 0.7f, 0.0f));
         SetPatternIntensity(4.0f);
         SetPatternScale(4.0f);
         SetPatternSpeed(2.0f);
@@ -161,7 +155,7 @@ public class MandalaShaderController : MonoBehaviour
     public void ApplyDescentPreset()
     {
         SetBaseColor(new Color(0.6f, 0.4f, 0.8f));
-        SetAccentColor(new Color(0.5f, 0.3f, 0.9f, 0.9f));
+        SetAccentColor(new Color(0.5f, 0.3f, 0.9f));
         SetPatternIntensity(2.0f);
         SetPatternScale(3.0f);
         SetPatternSpeed(1.0f);
@@ -171,7 +165,7 @@ public class MandalaShaderController : MonoBehaviour
     public void ApplyResolutionPreset()
     {
         SetBaseColor(new Color(0.9f, 0.9f, 1.0f));
-        SetAccentColor(new Color(1.0f, 1.0f, 1.0f, 0.8f));
+        SetAccentColor(new Color(1.0f, 1.0f, 1.0f));
         SetPatternIntensity(0.7f);
         SetPatternScale(1.0f);
         SetPatternSpeed(0.3f);

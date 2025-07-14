@@ -42,7 +42,7 @@ public class MusicVisualizationManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("❌ Missing audio source or track!");
+            Debug.LogWarning("Missing audio source or track!");
         }
 
         isPlaying = true;
@@ -59,7 +59,6 @@ public class MusicVisualizationManager : MonoBehaviour
 
         if (currentPhase != previousPhase)
         {
-            Debug.Log($"🔁 Phase changed: {previousPhase} → {currentPhase}");
             ApplyVisualEffects();
             previousPhase = currentPhase;
         }

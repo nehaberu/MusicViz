@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
+// Controls the visual appearance and transitions between mandala phases
 public class MandalaImageController : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
 
-    // 🌸 Add all 8 sprites here
+    // Mandala sprites for each phase
     public Sprite emergence, curiosity, buildup, peak;
     public Sprite descent, resolution, reflection, meditation;
 
@@ -17,10 +18,10 @@ public class MandalaImageController : MonoBehaviour
 
     private void Update()
     {
-        // 🌀 Auto-rotate
+        // Rotate mandala
         transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-        // ✨ Smooth alpha fade
+        // Smooth fade in/out
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
@@ -29,34 +30,28 @@ public class MandalaImageController : MonoBehaviour
         }
     }
 
+    // Switch sprite instantly with fade-in
     public void SetPhase(string phase)
     {
-        if (spriteRenderer == null)
-        {
-            Debug.LogWarning("🚫 SpriteRenderer is null in SetPhase!");
-            return;
-        }
+        if (spriteRenderer == null) return;
 
         Sprite selectedSprite = GetPhaseSprite(phase);
-        if (selectedSprite == null)
-        {
-            Debug.LogWarning($"❓ Unknown or null sprite for phase: {phase}");
-            return;
-        }
+        if (selectedSprite == null) return;
 
         Material currentMat = spriteRenderer.sharedMaterial;
         spriteRenderer.sprite = selectedSprite;
         spriteRenderer.sharedMaterial = currentMat;
 
-        Debug.Log($"🖼 Sprite set for phase '{phase}' → {selectedSprite?.name}");
         FadeIn();
     }
 
+    // Smoothly transition to a new sprite
     public void SetPhaseSmooth(Sprite newSprite, float duration)
     {
         StartCoroutine(SmoothTransition(newSprite, duration));
     }
 
+    // Set transparency directly
     public void SetAlpha(float a)
     {
         if (spriteRenderer != null)
@@ -67,6 +62,7 @@ public class MandalaImageController : MonoBehaviour
         }
     }
 
+    // Coroutine for smooth sprite transition (fade out → switch → fade in)
     IEnumerator SmoothTransition(Sprite newSprite, float duration)
     {
         float time = 0f;
@@ -77,7 +73,7 @@ public class MandalaImageController : MonoBehaviour
         Vector3 popScale = originalScale * 1.1f;
         Vector3 miniScale = originalScale * 0.4f;
 
-        // 🌘 Fade out and shrink
+        // Fade out and shrink
         while (time < duration / 2f)
         {
             float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
@@ -97,7 +93,7 @@ public class MandalaImageController : MonoBehaviour
 
         transform.localScale = popScale;
 
-        // 🌕 Fade in and pop back
+        // Fade in and scale back
         time = 0f;
         while (time < duration / 2f)
         {
@@ -114,6 +110,7 @@ public class MandalaImageController : MonoBehaviour
         transform.localScale = originalScale;
     }
 
+    // Returns the sprite based on phase name
     private Sprite GetPhaseSprite(string phase)
     {
         switch (phase.ToLower())
