@@ -27,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984144490873265427}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.91818655, w: 0.3961485}
+  m_LocalRotation: {x: -0, y: -0, z: -0.9533522, w: 0.30186018}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.80226785, y: 0.80226785, z: 0.80226785}
+  m_LocalScale: {x: 0.37060866, y: 0.37060866, z: 0.37060866}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -108,6 +108,9 @@ MonoBehaviour:
   reflection: {fileID: 0}
   meditation: {fileID: 0}
   transitionDuration: 1.5
+  rotationSpeed: 20
+  fadeSpeed: 1.5
+  pulseEffect: {fileID: 0}
 --- !u!114 &-8590784742674560930
 MonoBehaviour:
   m_ObjectHideFlags: 0

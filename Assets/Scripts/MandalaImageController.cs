@@ -6,8 +6,7 @@ public class MandalaImageController : MonoBehaviour
     [Header("Mandala Sprites")]
     public SpriteRenderer spriteRenderer;
     public Sprite emergence, curiosity, buildup, peak, descent, resolution;
-    public Sprite reflection;   // ✅ Added
-    public Sprite meditation;   // ✅ Added
+    public Sprite reflection, meditation;
 
     [Header("Transition Settings")]
     [SerializeField] private float transitionDuration = 1.5f;
@@ -19,6 +18,7 @@ public class MandalaImageController : MonoBehaviour
 
     private float targetAlpha = 1f;
     private Coroutine currentTransition;
+    private Color tintColor = Color.white;
 
     private void Start()
     {
@@ -33,37 +33,23 @@ public class MandalaImageController : MonoBehaviour
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
-            current.a = Mathf.Lerp(current.a, targetAlpha, Time.deltaTime * fadeSpeed);
-            spriteRenderer.color = current;
+            float newAlpha = Mathf.Lerp(current.a, targetAlpha, Time.deltaTime * fadeSpeed);
+            spriteRenderer.color = new Color(tintColor.r, tintColor.g, tintColor.b, newAlpha);
         }
-    }
-
-    public void SetPhase(string phase)
-    {
-        if (spriteRenderer == null) return;
-
-        Sprite selectedSprite = GetPhaseSprite(phase);
-        if (selectedSprite == null || spriteRenderer.sprite == selectedSprite)
-            return;
-
-        spriteRenderer.sprite = selectedSprite;
-        FadeIn();
-
-        Debug.Log($"🖼 Sprite set for phase '{phase}' → {selectedSprite?.name}");
     }
 
     public void SetPhaseSmooth(Sprite newSprite, float duration)
     {
         if (spriteRenderer == null || newSprite == null) return;
-        if (spriteRenderer.sprite == newSprite)
-            return;
+        if (spriteRenderer.sprite == newSprite) return;
 
         if (currentTransition != null)
             StopCoroutine(currentTransition);
 
-        currentTransition = StartCoroutine(SmoothTransition(newSprite, duration));
+        currentTransition = StartCoroutine(CrossFadeTransition(newSprite, duration));
     }
 
+    public void SetTintColor(Color color) => tintColor = color;
     public void SetAlpha(float a)
     {
         if (spriteRenderer != null)
@@ -78,62 +64,38 @@ public class MandalaImageController : MonoBehaviour
     public void FadeIn() => targetAlpha = 1f;
     public void FadeOut() => targetAlpha = 0f;
 
-    private IEnumerator SmoothTransition(Sprite newSprite, float duration)
+    private IEnumerator CrossFadeTransition(Sprite newSprite, float duration)
     {
-        float time = 0f;
-        Color c = spriteRenderer.color;
-        float startAlpha = c.a;
+        GameObject overlayObj = new GameObject("MandalaTransitionOverlay");
+        overlayObj.transform.SetParent(transform.parent, false);
+        SpriteRenderer overlayRenderer = overlayObj.AddComponent<SpriteRenderer>();
 
-        Vector3 originalScale = transform.localScale;
-        Vector3 popScale = originalScale * 1.1f;
-        Vector3 miniScale = originalScale * 0.4f;
+        overlayRenderer.sprite = spriteRenderer.sprite;
+        overlayRenderer.sortingOrder = spriteRenderer.sortingOrder - 1;
+        overlayRenderer.color = spriteRenderer.color;
+        overlayRenderer.transform.localScale = transform.localScale;
 
-        while (time < duration / 2f)
-        {
-            float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
-            c.a = Mathf.Lerp(startAlpha, 0f, t);
-            spriteRenderer.color = c;
-            transform.localScale = Vector3.Lerp(originalScale, miniScale, t);
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        spriteRenderer.color = new Color(c.r, c.g, c.b, 0f);
         spriteRenderer.sprite = newSprite;
-        transform.localScale = popScale;
+        spriteRenderer.color = new Color(tintColor.r, tintColor.g, tintColor.b, 0f);
 
-        TriggerPulse();
-
-        time = 0f;
-        while (time < duration / 2f)
+        float time = 0f;
+        while (time < duration)
         {
-            float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
-            c.a = Mathf.Lerp(0f, 1f, t);
-            spriteRenderer.color = c;
-            transform.localScale = Vector3.Lerp(popScale, originalScale, t);
+            float t = time / duration;
+            float fadeInAlpha = Mathf.SmoothStep(0f, 1f, t);
+            float fadeOutAlpha = 1f - fadeInAlpha;
+
+            spriteRenderer.color = new Color(tintColor.r, tintColor.g, tintColor.b, fadeInAlpha);
+            overlayRenderer.color = new Color(overlayRenderer.color.r, overlayRenderer.color.g, overlayRenderer.color.b, fadeOutAlpha);
+
             time += Time.deltaTime;
             yield return null;
         }
 
-        spriteRenderer.color = new Color(c.r, c.g, c.b, 1f);
-        transform.localScale = originalScale;
+        spriteRenderer.color = new Color(tintColor.r, tintColor.g, tintColor.b, 1f);
+        Destroy(overlayObj);
+        TriggerPulse();
         currentTransition = null;
-    }
-
-    private Sprite GetPhaseSprite(string phase)
-    {
-        switch (phase.ToLower())
-        {
-            case "emergence": return emergence;
-            case "curiosity": return curiosity;
-            case "buildup": return buildup;
-            case "peak": return peak;
-            case "descent": return descent;
-            case "resolution": return resolution;
-            case "reflection": return reflection;   // ✅ Added
-            case "meditation": return meditation;   // ✅ Added
-            default: return null;
-        }
     }
 
     private void TriggerPulse()
