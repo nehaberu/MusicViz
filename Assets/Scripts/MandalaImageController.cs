@@ -1,27 +1,35 @@
 using System.Collections;
 using UnityEngine;
 
-// Controls the visual appearance and transitions between mandala phases
 public class MandalaImageController : MonoBehaviour
 {
+    [Header("Mandala Sprites")]
     public SpriteRenderer spriteRenderer;
+    public Sprite emergence, curiosity, buildup, peak, descent, resolution;
+    public Sprite reflection;   // ✅ Added
+    public Sprite meditation;   // ✅ Added
 
-    // Mandala sprites for each phase
-    public Sprite emergence, curiosity, buildup, peak;
-    public Sprite descent, resolution, reflection, meditation;
-
-    private float rotationSpeed = 20f;
-    private float targetAlpha = 1f;
-    private float fadeSpeed = 1.5f;
-
+    [Header("Transition Settings")]
     [SerializeField] private float transitionDuration = 1.5f;
+    [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float fadeSpeed = 1.5f;
+
+    [Header("Optional Effects")]
+    [SerializeField] private ParticleSystem pulseEffect;
+
+    private float targetAlpha = 1f;
+    private Coroutine currentTransition;
+
+    private void Start()
+    {
+        if (spriteRenderer == null)
+            Debug.LogWarning("🚫 SpriteRenderer not assigned!");
+    }
 
     private void Update()
     {
-        // Rotate mandala
         transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-        // Smooth fade in/out
         if (spriteRenderer != null)
         {
             Color current = spriteRenderer.color;
@@ -30,28 +38,32 @@ public class MandalaImageController : MonoBehaviour
         }
     }
 
-    // Switch sprite instantly with fade-in
     public void SetPhase(string phase)
     {
         if (spriteRenderer == null) return;
 
         Sprite selectedSprite = GetPhaseSprite(phase);
-        if (selectedSprite == null) return;
+        if (selectedSprite == null || spriteRenderer.sprite == selectedSprite)
+            return;
 
-        Material currentMat = spriteRenderer.sharedMaterial;
         spriteRenderer.sprite = selectedSprite;
-        spriteRenderer.sharedMaterial = currentMat;
-
         FadeIn();
+
+        Debug.Log($"🖼 Sprite set for phase '{phase}' → {selectedSprite?.name}");
     }
 
-    // Smoothly transition to a new sprite
     public void SetPhaseSmooth(Sprite newSprite, float duration)
     {
-        StartCoroutine(SmoothTransition(newSprite, duration));
+        if (spriteRenderer == null || newSprite == null) return;
+        if (spriteRenderer.sprite == newSprite)
+            return;
+
+        if (currentTransition != null)
+            StopCoroutine(currentTransition);
+
+        currentTransition = StartCoroutine(SmoothTransition(newSprite, duration));
     }
 
-    // Set transparency directly
     public void SetAlpha(float a)
     {
         if (spriteRenderer != null)
@@ -62,8 +74,11 @@ public class MandalaImageController : MonoBehaviour
         }
     }
 
-    // Coroutine for smooth sprite transition (fade out → switch → fade in)
-    IEnumerator SmoothTransition(Sprite newSprite, float duration)
+    public void SetRotationSpeed(float speed) => rotationSpeed = speed;
+    public void FadeIn() => targetAlpha = 1f;
+    public void FadeOut() => targetAlpha = 0f;
+
+    private IEnumerator SmoothTransition(Sprite newSprite, float duration)
     {
         float time = 0f;
         Color c = spriteRenderer.color;
@@ -73,7 +88,6 @@ public class MandalaImageController : MonoBehaviour
         Vector3 popScale = originalScale * 1.1f;
         Vector3 miniScale = originalScale * 0.4f;
 
-        // Fade out and shrink
         while (time < duration / 2f)
         {
             float t = Mathf.SmoothStep(0f, 1f, time / (duration / 2f));
@@ -84,16 +98,12 @@ public class MandalaImageController : MonoBehaviour
             yield return null;
         }
 
-        c.a = 0f;
-        spriteRenderer.color = c;
-
-        Material currentMat = spriteRenderer.sharedMaterial;
+        spriteRenderer.color = new Color(c.r, c.g, c.b, 0f);
         spriteRenderer.sprite = newSprite;
-        spriteRenderer.sharedMaterial = currentMat;
-
         transform.localScale = popScale;
 
-        // Fade in and scale back
+        TriggerPulse();
+
         time = 0f;
         while (time < duration / 2f)
         {
@@ -105,12 +115,11 @@ public class MandalaImageController : MonoBehaviour
             yield return null;
         }
 
-        c.a = 1f;
-        spriteRenderer.color = c;
+        spriteRenderer.color = new Color(c.r, c.g, c.b, 1f);
         transform.localScale = originalScale;
+        currentTransition = null;
     }
 
-    // Returns the sprite based on phase name
     private Sprite GetPhaseSprite(string phase)
     {
         switch (phase.ToLower())
@@ -121,13 +130,18 @@ public class MandalaImageController : MonoBehaviour
             case "peak": return peak;
             case "descent": return descent;
             case "resolution": return resolution;
-            case "reflection": return reflection;
-            case "meditation": return meditation;
+            case "reflection": return reflection;   // ✅ Added
+            case "meditation": return meditation;   // ✅ Added
             default: return null;
         }
     }
 
-    public void FadeIn() => targetAlpha = 1f;
-    public void FadeOut() => targetAlpha = 0f;
-    public void SetRotationSpeed(float speed) => rotationSpeed = speed;
+    private void TriggerPulse()
+    {
+        if (pulseEffect != null)
+        {
+            pulseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            pulseEffect.Play();
+        }
+    }
 }

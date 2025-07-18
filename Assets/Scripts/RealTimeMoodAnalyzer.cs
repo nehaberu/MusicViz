@@ -9,7 +9,7 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
     public MandalaController mandalaController;
     public MandalaShaderController shaderController;
     public MandalaImageController imageController;
-    
+
     public bool useMicrophone = false;
     private string selectedMic;
 
@@ -31,36 +31,32 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 
     void Start()
     {
-    if (useMicrophone)
-    {
-        if (Microphone.devices.Length > 0)
+        if (useMicrophone)
         {
-            selectedMic = Microphone.devices[0];
-            audioSource.clip = Microphone.Start(selectedMic, true, 10, AudioSettings.outputSampleRate);
-            audioSource.loop = true;
-
-            while (!(Microphone.GetPosition(selectedMic) > 0)) { } // Wait for mic
-            audioSource.Play();
+            if (Microphone.devices.Length > 0)
+            {
+                selectedMic = Microphone.devices[0];
+                audioSource = GetComponent<AudioSource>();
+                audioSource.clip = Microphone.Start(selectedMic, true, 10, AudioSettings.outputSampleRate);
+                audioSource.loop = true;
+                while (!(Microphone.GetPosition(selectedMic) > 0)) { }
+                audioSource.Play();
+            }
+            else
+            {
+                Debug.LogError("No microphone found!");
+            }
         }
         else
         {
-            Debug.LogError("No microphone found!");
+            audioSource = GetComponent<AudioSource>();
+            audioSource.Play();
         }
-    }
-    else
-    {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.Play(); // For preloaded music
-    }
 
-    if (mandalaController == null)
-        Debug.LogWarning("⚠️ MandalaController not assigned.");
-    if (shaderController == null)
-        Debug.LogWarning("⚠️ ShaderController not assigned.");
-    if (imageController == null)
-        Debug.LogWarning("⚠️ ImageController not assigned.");
-}
-
+        if (mandalaController == null) Debug.LogWarning("⚠️ MandalaController not assigned.");
+        if (shaderController == null) Debug.LogWarning("⚠️ ShaderController not assigned.");
+        if (imageController == null) Debug.LogWarning("⚠️ ImageController not assigned.");
+    }
 
     void Update()
     {
@@ -70,9 +66,8 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         float rms = Mathf.Sqrt(samples.Average(s => s * s));
         float centroid = ComputeSpectralCentroid(spectrum);
         float intensity = Mathf.Clamp01(rms * 25f);
+
         backgroundPanner?.SetIntensity(intensity);
-
-
         mandalaController?.SetRotationSpeed(intensity);
         ApplyMoodBasedOnAudio(rms, centroid);
     }
@@ -94,7 +89,6 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         if (mandalaController == null || shaderController == null || imageController == null)
             return;
 
-        // Adjust thresholds to match music dynamics
         if (rms < 0.015f)
             currentMood = Mood.Meditation;
         else if (rms < 0.03f && centroid < 0.2f)
@@ -112,7 +106,6 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         else
             currentMood = Mood.Reflection;
 
-        // Hold mood for a minimum time
         if (currentMood == previousMood || Time.time - lastMoodChangeTime < minMoodDuration)
             return;
 
@@ -122,7 +115,7 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         switch (currentMood)
         {
             case Mood.Emergence:
-                shaderController.SetBaseColor(new Color(0.2f, 1f, 0.5f));  
+                shaderController.SetBaseColor(new Color(0.2f, 1f, 0.5f));
                 shaderController.SetGlowIntensity(0.25f);
                 mandalaController.SetScale(1.0f);
                 imageController.SetPhaseSmooth(imageController.emergence, 1.5f);
@@ -143,14 +136,14 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
                 break;
 
             case Mood.Peak:
-                shaderController.SetBaseColor(new Color(1f, 0.3f, 0.1f)); 
+                shaderController.SetBaseColor(new Color(1f, 0.3f, 0.1f));
                 shaderController.SetGlowIntensity(0.8f);
                 mandalaController.SetScale(1.8f);
                 imageController.SetPhaseSmooth(imageController.peak, 1.5f);
                 break;
 
             case Mood.Descent:
-                shaderController.SetBaseColor(new Color(0.8f, 0.5f, 1f)); 
+                shaderController.SetBaseColor(new Color(0.8f, 0.5f, 1f));
                 shaderController.SetGlowIntensity(0.3f);
                 mandalaController.SetScale(1.2f);
                 imageController.SetPhaseSmooth(imageController.descent, 1.5f);
@@ -164,14 +157,14 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
                 break;
 
             case Mood.Reflection:
-                shaderController.SetBaseColor(new Color(1f, 0.5f, 0.9f)); 
+                shaderController.SetBaseColor(new Color(1f, 0.5f, 0.9f));
                 shaderController.SetGlowIntensity(0.2f);
                 mandalaController.SetScale(1.1f);
                 imageController.SetPhaseSmooth(imageController.reflection, 1.5f);
                 break;
 
             case Mood.Meditation:
-                shaderController.SetBaseColor(new Color(0.5f, 0.7f, 1f)); 
+                shaderController.SetBaseColor(new Color(0.5f, 0.7f, 1f));
                 shaderController.SetGlowIntensity(0.15f);
                 mandalaController.SetScale(0.85f);
                 imageController.SetPhaseSmooth(imageController.meditation, 1.5f);
