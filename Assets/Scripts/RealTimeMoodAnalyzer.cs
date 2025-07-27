@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+// Analyzes real-time audio input (microphone or music track) to estimate emotional "mood"
+// using RMS and spectral centroid. Dynamically updates mandala visuals—sprite, tint, glow, scale, and background movement—based on the detected mood.
 [RequireComponent(typeof(AudioSource))]
 public class RealTimeMoodAnalyzer : MonoBehaviour
 {
@@ -14,9 +16,12 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 
     private string selectedMic;
     private AudioSource audioSource;
+
+    // Arrays to hold real-time audio data
     private float[] spectrum = new float[128];
     private float[] samples = new float[128];
 
+    // Enum defining emotional "mood" states
     private enum Mood
     {
         Emergence, Curiosity, Buildup, Peak,
@@ -26,12 +31,13 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
     private Mood currentMood;
     private Mood previousMood = Mood.Resolution;
     private float lastMoodChangeTime = 0f;
-    private float minMoodDuration = 2.5f;
+    private float minMoodDuration = 2.5f; // Minimum time between mood changes
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
 
+        // Use microphone input if enabled
         if (useMicrophone)
         {
             if (Microphone.devices.Length > 0)
@@ -49,9 +55,10 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         }
         else
         {
-            audioSource.Play();
+            audioSource.Play(); // Play audio clip normally if no microphone
         }
 
+        // Warn if required references aren't set
         if (!mandalaController) Debug.LogWarning("⚠ MandalaController not assigned.");
         if (!shaderController) Debug.LogWarning("⚠ ShaderController not assigned.");
         if (!imageController) Debug.LogWarning("⚠ ImageController not assigned.");
@@ -59,19 +66,24 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
 
     void Update()
     {
+        // Get real-time audio data
         audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Blackman);
         audioSource.GetOutputData(samples, 0);
 
-        float rms = Mathf.Sqrt(samples.Average(s => s * s));
-        float centroid = ComputeSpectralCentroid(spectrum);
-        float intensity = Mathf.Clamp01(rms * 25f);
+        // Compute audio features
+        float rms = Mathf.Sqrt(samples.Average(s => s * s)); // Root Mean Square (volume/intensity)
+        float centroid = ComputeSpectralCentroid(spectrum);  // Brightness of sound
+        float intensity = Mathf.Clamp01(rms * 25f);           // Scaled volume for visuals
 
+        // Pass intensity to visual elements
         backgroundPanner?.SetIntensity(intensity);
         mandalaController?.SetRotationSpeed(intensity);
 
+        // Detect and apply mood
         ApplyMoodBasedOnAudio(rms, centroid);
     }
 
+    // Calculates the spectral centroid (perceived brightness) from FFT data
     float ComputeSpectralCentroid(float[] spectrum)
     {
         float num = 0f, denom = 0f;
@@ -81,14 +93,15 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
             num += freq * spectrum[i];
             denom += spectrum[i];
         }
-        return denom > 0 ? num / denom / 20000f : 0f;
+        return denom > 0 ? num / denom / 20000f : 0f; // Normalize for easier thresholding
     }
 
+    // Determines the current mood based on audio features and applies corresponding visuals
     void ApplyMoodBasedOnAudio(float rms, float centroid)
     {
         if (!mandalaController || !shaderController || !imageController) return;
 
-        // Mood classification based on audio RMS and spectral centroid
+        // Mood classification based on loudness and spectral brightness
         if (rms < 0.015f)
             currentMood = Mood.Meditation;
         else if (rms < 0.03f && centroid < 0.2f)
@@ -106,13 +119,14 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
         else
             currentMood = Mood.Reflection;
 
+        // Avoid rapid switching between moods
         if (currentMood == previousMood || Time.time - lastMoodChangeTime < minMoodDuration)
             return;
 
         previousMood = currentMood;
         lastMoodChangeTime = Time.time;
 
-        // Apply visuals based on mood
+        // Apply mood-specific visual changes
         switch (currentMood)
         {
             case Mood.Emergence:
@@ -180,6 +194,7 @@ public class RealTimeMoodAnalyzer : MonoBehaviour
                 break;
         }
 
+        // Debug log to monitor transitions
         Debug.Log($"🎵 Mood changed to: {currentMood} | RMS: {rms:F3}, Centroid: {centroid:F3}");
     }
 }

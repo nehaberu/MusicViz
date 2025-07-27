@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class MusicVisualizationManager : MonoBehaviour
 {
+    // Controls the progression of the mandala visualization based on music playback.
+// It switches between phases at set times, and applies corresponding visual effects, mandala sprites, and shader presets.
+
     [Header("Audio Settings")]
     [SerializeField] private AudioClip musicTrack;
     [SerializeField] private AudioSource audioSource;
@@ -10,7 +13,7 @@ public class MusicVisualizationManager : MonoBehaviour
     [Header("Mandala References")]
     [SerializeField] private MandalaController mandalaController;
     [SerializeField] private MandalaImageController imageController;
-    [SerializeField] private MandalaShaderController shaderController; // 🔥 NEW
+    [SerializeField] private MandalaShaderController shaderController;
 
     [Header("Visualization Section Markers")]
     [SerializeField] private float emergenceStartTime = 0f;
@@ -29,8 +32,7 @@ public class MusicVisualizationManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("🎬 MusicVisualizationManager is running");
-
+        // Initialize audio source and play music
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
@@ -38,15 +40,10 @@ public class MusicVisualizationManager : MonoBehaviour
         {
             audioSource.clip = musicTrack;
             audioSource.Play();
-            Debug.Log("🎶 Music playback started");
-        }
-        else
-        {
-            Debug.LogWarning("Missing audio source or track!");
         }
 
         isPlaying = true;
-        ApplyVisualEffects();
+        ApplyVisualEffects(); // Trigger initial visuals
     }
 
     void Update()
@@ -57,6 +54,7 @@ public class MusicVisualizationManager : MonoBehaviour
         float currentTime = audioSource.time;
         UpdateCurrentPhase(currentTime);
 
+        // Apply visuals only if phase has changed
         if (currentPhase != previousPhase)
         {
             ApplyVisualEffects();
@@ -66,6 +64,7 @@ public class MusicVisualizationManager : MonoBehaviour
 
     private void UpdateCurrentPhase(float currentTime)
     {
+        // Determine current phase based on time
         if (currentTime >= resolutionStartTime)
             currentPhase = MandalaPhase.Resolution;
         else if (currentTime >= descentStartTime)
@@ -82,8 +81,7 @@ public class MusicVisualizationManager : MonoBehaviour
 
     private void ApplyVisualEffects()
     {
-        Debug.Log("✨ Applying visuals for phase: " + currentPhase);
-
+        // Update image sprite for the current phase
         if (imageController != null)
         {
             string phaseName = currentPhase.ToString().ToLower();
@@ -91,38 +89,27 @@ public class MusicVisualizationManager : MonoBehaviour
             imageController.SetPhaseSmooth(spriteToUse, 2f);
         }
 
-        // ✨ Apply dynamic shader effects
+        // Apply shader preset based on current phase
         if (shaderController != null)
         {
             switch (currentPhase)
             {
-                case MandalaPhase.Emergence:
-                    shaderController.ApplyEmergencePreset();
-                    break;
-                case MandalaPhase.Curiosity:
-                    shaderController.ApplyCuriosityPreset();
-                    break;
-                case MandalaPhase.Buildup:
-                    shaderController.ApplyBuildupPreset();
-                    break;
-                case MandalaPhase.Peak:
-                    shaderController.ApplyPeakPreset();
-                    break;
-                case MandalaPhase.Descent:
-                    shaderController.ApplyDescentPreset();
-                    break;
-                case MandalaPhase.Resolution:
-                    shaderController.ApplyResolutionPreset();
-                    break;
+                case MandalaPhase.Emergence: shaderController.ApplyEmergencePreset(); break;
+                case MandalaPhase.Curiosity: shaderController.ApplyCuriosityPreset(); break;
+                case MandalaPhase.Buildup: shaderController.ApplyBuildupPreset(); break;
+                case MandalaPhase.Peak: shaderController.ApplyPeakPreset(); break;
+                case MandalaPhase.Descent: shaderController.ApplyDescentPreset(); break;
+                case MandalaPhase.Resolution: shaderController.ApplyResolutionPreset(); break;
             }
         }
 
-        // Animate scale + fade
+        // Stop previous animation coroutine if running
         if (currentEffectRoutine != null)
             StopCoroutine(currentEffectRoutine);
 
         float duration = TimeUntilNextPhase();
 
+        // Animate based on phase type
         switch (currentPhase)
         {
             case MandalaPhase.Emergence:
@@ -142,16 +129,19 @@ public class MusicVisualizationManager : MonoBehaviour
     private float TimeUntilNextPhase()
     {
         float currentTime = audioSource.time;
+
         if (currentTime < curiosityStartTime) return curiosityStartTime - currentTime;
         if (currentTime < buildupStartTime) return buildupStartTime - currentTime;
         if (currentTime < peakStartTime) return peakStartTime - currentTime;
         if (currentTime < descentStartTime) return descentStartTime - currentTime;
         if (currentTime < resolutionStartTime) return resolutionStartTime - currentTime;
-        return 20f;
+
+        return 20f; // default fallback duration
     }
 
     private Sprite GetPhaseSprite(string phase)
     {
+        // Return sprite matching the given phase name
         switch (phase.ToLower())
         {
             case "emergence": return imageController.emergence;
@@ -167,7 +157,7 @@ public class MusicVisualizationManager : MonoBehaviour
     private IEnumerator AnimateScaleFade(float startScale, float endScale, float startAlpha, float endAlpha, float duration)
     {
         float time = 0f;
-        imageController?.SetRotationSpeed(8f);
+        imageController?.SetRotationSpeed(8f); // slow rotation during transition
 
         while (time < duration)
         {
@@ -183,7 +173,7 @@ public class MusicVisualizationManager : MonoBehaviour
             yield return null;
         }
 
-        // Final state
+        // Final values
         mandalaController?.SetScale(endScale);
         imageController?.SetAlpha(endAlpha);
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class MandalaShaderController : MonoBehaviour
 {
-    // This script controls shader parameters like color, glow, and pattern effects
+    // Controls shader parameters like color, glow, and pattern effects
 
     [Header("Material Settings")]
     [SerializeField] private Material mandalaMaterial;
@@ -19,6 +19,7 @@ public class MandalaShaderController : MonoBehaviour
     [SerializeField] [Range(0, 5)] private float patternSpeed = 1.0f;
     [SerializeField] [Range(0, 1)] private float glowIntensity = 0.5f;
 
+    // Shader property IDs for performance
     private int baseColorID;
     private int accentColorID;
     private int patternIntensityID;
@@ -32,6 +33,7 @@ public class MandalaShaderController : MonoBehaviour
 
     void Awake()
     {
+        // Cache shader property IDs
         baseColorID = Shader.PropertyToID("_BaseColor");
         accentColorID = Shader.PropertyToID("_AccentColor");
         patternIntensityID = Shader.PropertyToID("_PatternIntensity");
@@ -42,6 +44,7 @@ public class MandalaShaderController : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+        // Fallback to sprite material if not assigned
         if (mandalaMaterial == null && spriteRenderer != null)
             mandalaMaterial = spriteRenderer.material;
 
@@ -50,6 +53,7 @@ public class MandalaShaderController : MonoBehaviour
 
     void Update()
     {
+        // Update shader time property for time-based animations
         animationTime += Time.deltaTime;
 
         if (mandalaMaterial != null)
@@ -68,7 +72,7 @@ public class MandalaShaderController : MonoBehaviour
         mandalaMaterial.SetFloat(glowIntensityID, glowIntensity);
     }
 
-    // Public methods to update visual properties
+    // Public setters for external control
     public void SetBaseColor(Color color)
     {
         baseColor = color;
@@ -111,7 +115,7 @@ public class MandalaShaderController : MonoBehaviour
             mandalaMaterial.SetFloat(glowIntensityID, intensity);
     }
 
-    // Optional: You can call these presets if you want preconfigured moods
+    // Preset configurations for different emotional phases
     public void ApplyEmergencePreset()
     {
         SetBaseColor(new Color(0.2f, 0.4f, 0.8f));
